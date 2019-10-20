@@ -96,10 +96,10 @@ void show_stack()
             i = stack + c;
             switch (i->type) {
             case _int:
-                cprintf("%7d", *i);
+                cprintf("%7d", i->i);
                 break;
             case _symbol:
-                cprintf("%7s", *i);
+                cprintf("%7s", i->symbol);
                 break;
             default:
                 cprintf("badtype");
