@@ -6,20 +6,19 @@ enum item_type {
     _int, _symbol
 };
 
-typedef union
-{
-    int i;
-    char symbol[8];
+typedef struct {
+    union {
+        int i;
+        char symbol[8];
+    };
     enum item_type type;
 } stack_item;
 
 stack_item stack[64];
 stack_item* stack_pointer = stack;
 
-void push(stack_item* i)
-{
-    if (stack_pointer == stack + sizeof(stack))
-    {
+void push(stack_item* i) {
+    if (stack_pointer == stack + sizeof(stack)) {
         printf("stack overflow\n");
         return;
     }
@@ -27,19 +26,16 @@ void push(stack_item* i)
     ++stack_pointer;
 }
 
-void pop(stack_item* i)
-{
+void pop(stack_item* i) {
     --stack_pointer;
-    if (stack_pointer < stack)
-    {
+    if (stack_pointer < stack) {
         stack_pointer = stack;
         printf("stack underflow\n");
     }
     *i = *stack_pointer;
 }
 
-void eval(char* line)
-{
+void eval(char* line) {
     stack_item a, b;
     stack_item i;
     int p;
@@ -50,7 +46,7 @@ void eval(char* line)
             i.type = _int;
             push(&i);
             line += p;
-        } else if(c == '+' || c == '-' || c == '*' || c == '/') {
+        } else if (c == '+' || c == '-' || c == '*' || c == '/') {
             pop(&a);
             pop(&b);
             switch (c) {
@@ -64,10 +60,19 @@ void eval(char* line)
             ++line;
         } else if (c == '\'') {
             ++line;
-            sscanf(line, "%7s%n", i.symbol, p);
+            for (p = 0; 1; ++p, ++line)
+            {
+                c = *line;
+                if (p < 7)
+                {
+                    i.symbol[p] = c;
+                    i.symbol[p+1] = 0;
+                }
+                if (c == ' ' || c == 0)
+                    break;
+            }
             i.type = _symbol;
             push(&i);
-            line += p;
         } else if (c == 0) {
             break;
         } else if (c == ' ') {
@@ -79,8 +84,7 @@ void eval(char* line)
     }
 }
 
-void show_stack()
-{
+void show_stack() {
     char ox, oy, c;
     stack_item *i;
 
@@ -88,11 +92,9 @@ void show_stack()
     oy = wherey();
 
     c = 0;
-    while (c < 25)
-    {
-        gotoxy(34, c);
-        if (c < stack_pointer - stack)
-        {
+    while (c < 25) {
+        gotoxy(32, c);
+        if (c < stack_pointer - stack) {
             i = stack + c;
             switch (i->type) {
             case _int:
@@ -105,9 +107,9 @@ void show_stack()
                 cprintf("badtype");
                 break;
            }
-        }
-        else
+        } else {
             cprintf("       ");
+        }
         ++c;
     }
 
