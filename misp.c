@@ -35,12 +35,37 @@ void pop(stack_item* i) {
     *i = *stack_pointer;
 }
 
+void eval_token(char* token)
+{
+}
+
+#define TOKEN_LENGTH 7
 void eval(char* line) {
     stack_item a, b;
     stack_item i;
     int p;
     char c;
+    char token[TOKEN_LENGTH+1];
+    char* t = token;
     while (c = *line) {
+        if (c == ' ') {
+            t = token;
+            eval_token(token);
+        } else if (c == 0) {
+            t = token;
+            eval_token(token);
+            break;
+        } else if (t < token + TOKEN_LENGTH) {
+            t[0] = c;
+            t[1] = 0;
+            ++t;
+        }
+        ++line;
+    }
+}
+
+
+    {
         if (c >= '0' && c < '9') {
             sscanf(line, "%d%n", &i.i, &p);
             i.type = _int;
